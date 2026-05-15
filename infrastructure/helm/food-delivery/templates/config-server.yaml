@@ -1,0 +1,41 @@
+{{- $services := .Values.services -}}
+{{- $s := index $services "config-server" -}}
+{{- if $s.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $s.name }}
+  namespace: {{ include "food-delivery.namespace" . }}
+spec:
+  replicas: {{ $s.replicas }}
+  selector:
+    matchLabels:
+      app: {{ $s.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $s.name }}
+    spec:
+      containers:
+        - name: {{ $s.name }}
+          image: "{{ $.Values.global.imageRegistry }}/{{ $s.image }}:{{ $.Values.global.imageTag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ $s.port }}
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "{{ $s.profiles }}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $s.name }}
+  namespace: {{ include "food-delivery.namespace" . }}
+spec:
+  selector:
+    app: {{ $s.name }}
+  ports:
+    - port: {{ $s.externalPort | default $s.port }}
+      targetPort: {{ $s.port }}
+  type: {{ $s.serviceType | default "ClusterIP" }}
+{{- end }}

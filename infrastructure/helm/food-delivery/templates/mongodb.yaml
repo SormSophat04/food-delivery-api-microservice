@@ -1,0 +1,42 @@
+{{- if .Values.infrastructure.mongodb.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.infrastructure.mongodb.name }}
+  namespace: {{ include "food-delivery.namespace" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.infrastructure.mongodb.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.infrastructure.mongodb.name }}
+    spec:
+      containers:
+        - name: {{ .Values.infrastructure.mongodb.name }}
+          image: "{{ .Values.infrastructure.mongodb.image }}:{{ .Values.infrastructure.mongodb.imageTag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.infrastructure.mongodb.port }}
+          volumeMounts:
+            - name: mongodb-data
+              mountPath: /data/db
+      volumes:
+        - name: mongodb-data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.infrastructure.mongodb.name }}
+  namespace: {{ include "food-delivery.namespace" . }}
+spec:
+  selector:
+    app: {{ .Values.infrastructure.mongodb.name }}
+  ports:
+    - port: {{ .Values.infrastructure.mongodb.port }}
+      targetPort: {{ .Values.infrastructure.mongodb.port }}
+  type: ClusterIP
+{{- end }}

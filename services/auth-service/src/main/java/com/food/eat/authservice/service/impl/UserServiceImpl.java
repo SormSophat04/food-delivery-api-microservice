@@ -8,10 +8,12 @@ import com.food.eat.authservice.dto.response.ApiMessageResponse;
 import com.food.eat.authservice.dto.response.AuthResponse;
 import com.food.eat.authservice.dto.response.UserResponse;
 import com.food.eat.authservice.entity.EmailVerificationCode;
+import com.food.eat.authservice.entity.RefreshToken;
 import com.food.eat.authservice.enums.OtpPurpose;
 import com.food.eat.authservice.entity.User;
 import com.food.eat.authservice.jwt.JwtUtil;
 import com.food.eat.authservice.repository.EmailVerificationCodeRepository;
+import com.food.eat.authservice.repository.RefreshTokenRepository;
 import com.food.eat.authservice.repository.UserRepository;
 import com.food.eat.authservice.security.AuthUser;
 import com.food.eat.authservice.service.EmailService;
@@ -30,8 +32,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +48,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final EmailVerificationCodeRepository emailVerificationCodeRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final JwtUtil jwtUtil;
@@ -159,15 +164,32 @@ public class UserServiceImpl implements UserService {
         code.setVerified(true);
         emailVerificationCodeRepository.save(code);
 
+        return generateOAuth2Tokens(user);
+    }
+
+    public AuthResponse generateOAuth2Tokens(User user) {
         AuthUser authUser = toAuthUser(user);
-        String token = jwtUtil.generateToken(user.getEmail(), authUser.getAuthorities());
+        String accessToken = jwtUtil.generateAccessToken(user.getEmail(), authUser.getAuthorities());
+
+        String refreshTokenValue = jwtUtil.generateRefreshToken(user.getEmail());
+        saveRefreshToken(refreshTokenValue, user.getEmail());
 
         return new AuthResponse(
                 "Bearer",
-                token,
+                accessToken,
                 jwtUtil.getExpirationMs(),
+                refreshTokenValue,
+                "openid profile email roles",
                 toUserResponse(user)
         );
+    }
+
+    private void saveRefreshToken(String token, String userEmail) {
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setToken(token);
+        refreshToken.setUserEmail(userEmail);
+        refreshToken.setExpiresAt(Instant.now().plusSeconds(86400));
+        refreshTokenRepository.save(refreshToken);
     }
 
     private void sendCode(String email, OtpPurpose purpose) {

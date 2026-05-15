@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: git
+  cloud:
+    config:
+      server:
+        git:
+          uri: "https://github.com/SormSophat04/food-delivery-config.git"
+          username: sorm_sophat04
+          password: ${GITHUB_TOKEN}
+          clone-on-start: true
+          default-label: main
+#  security:
+#    oauth2:
+#      reourceserver:
+#        jwt:
+#          issuer-uri: http://auth-service:8080/realms/food-app
+
+server:
+  port: 8090
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  health:
+    kafka:
+      enabled: true
+  info:
+    env:
+      enabled: true

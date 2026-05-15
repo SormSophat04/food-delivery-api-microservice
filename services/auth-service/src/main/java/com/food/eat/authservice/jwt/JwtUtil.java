@@ -1,23 +1,23 @@
 package com.food.eat.authservice.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class JwtUtil {
 
-    @Value("${security.jwt.secret}")
-    private String secret;
+    private final JwtEncoder jwtEncoder;
+    private final JwtDecoder jwtDecoder;
 
     @Value("${security.jwt.expiration-ms}")
     private Long expirationMs;
@@ -25,45 +25,67 @@ public class JwtUtil {
     @Value("${security.jwt.issuer}")
     private String issuer;
 
-    public String generateToken(String subject, Collection<? extends GrantedAuthority> authorities) {
+    public JwtUtil(JWKSource<SecurityContext> jwkSource) {
+        this.jwtEncoder = new NimbusJwtEncoder(jwkSource);
+        this.jwtDecoder = NimbusJwtDecoder.withJwkSource(jwkSource).build();
+    }
+
+    public String generateAccessToken(String subject, Collection<? extends GrantedAuthority> authorities) {
         List<String> authoritiesStr = authorities.stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
-        Date now = new Date(System.currentTimeMillis());
-        Date expirationDate = new Date(now.getTime() + expirationMs);
+        Instant now = Instant.now();
+        Instant expiresAt = now.plusMillis(expirationMs);
 
-        return Jwts.builder()
-                .subject(subject)
+        JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(issuer)
+                .subject(subject)
                 .issuedAt(now)
-                .expiration(expirationDate)
+                .expiresAt(expiresAt)
+                .id(UUID.randomUUID().toString())
                 .claim("authorities", authoritiesStr)
-                .signWith(signingKey())
-                .compact();
+                .claim("scope", String.join(" ", authoritiesStr))
+                .build();
+
+        JwtEncoderParameters parameters = JwtEncoderParameters.from(
+                JwsHeader.with(SignatureAlgorithm.RS256).build(),
+                claims
+        );
+
+        return jwtEncoder.encode(parameters).getTokenValue();
     }
 
-    public Claims parseToken(String token) {
-        return Jwts.parser()
-                .verifyWith(signingKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+    public String generateRefreshToken(String subject) {
+        Instant now = Instant.now();
+        Instant expiresAt = now.plusSeconds(86400);
+
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer(issuer)
+                .subject(subject)
+                .issuedAt(now)
+                .expiresAt(expiresAt)
+                .id(UUID.randomUUID().toString())
+                .claim("type", "refresh")
+                .build();
+
+        JwtEncoderParameters parameters = JwtEncoderParameters.from(
+                JwsHeader.with(SignatureAlgorithm.RS256).build(),
+                claims
+        );
+
+        return jwtEncoder.encode(parameters).getTokenValue();
+    }
+
+    public Jwt parseToken(String token) {
+        return jwtDecoder.decode(token);
     }
 
     public long getExpirationMs() {
         return expirationMs;
     }
 
-    private SecretKey signingKey() {
-        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
-        if (keyBytes.length < 32) {
-            String paddedSecret = secret;
-            while (paddedSecret.getBytes(StandardCharsets.UTF_8).length < 32) {
-                paddedSecret += "0";
-            }
-            return Keys.hmacShaKeyFor(paddedSecret.getBytes(StandardCharsets.UTF_8));
-        }
-        return Keys.hmacShaKeyFor(keyBytes);
+    public JwtEncoder getJwtEncoder() {
+        return jwtEncoder;
     }
 }

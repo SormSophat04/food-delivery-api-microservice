@@ -1,0 +1,18 @@
+{{- $services := .Values.services -}}
+{{- $s := index $services "eureka-server" -}}
+{{- if $s.enabled }}
+{{ include "food-delivery.service-deployment" (dict "service" $s "ctx" .) }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $s.name }}
+  namespace: {{ include "food-delivery.namespace" . }}
+spec:
+  selector:
+    app: {{ $s.name }}
+  ports:
+    - port: {{ $s.externalPort | default $s.port }}
+      targetPort: {{ $s.port }}
+  type: {{ $s.serviceType | default "ClusterIP" }}
+{{- end }}

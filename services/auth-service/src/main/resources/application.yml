@@ -1,0 +1,110 @@
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/food_delivery}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:pg12345}
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:sophatsorm2023@gmail.com}
+    password: ${MAIL_PASSWORD:rpez slxo drgo qjjh}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          starttls:
+            enable: ${MAIL_SMTP_STARTTLS:true}
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: order-group
+      auto-offset-reset: earliest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  security:
+    oauth2:
+      authorizationserver:
+        client:
+          food-delivery-web:
+            registration:
+              client-id: ${OAUTH2_CLIENT_ID_WEB:food-delivery-web}
+              client-secret: ${OAUTH2_CLIENT_SECRET_WEB:{noop}secret-web}
+              client-authentication-methods:
+                - client_secret_basic
+              authorization-grant-types:
+                - authorization_code
+                - refresh_token
+                - client_credentials
+              redirect-uris:
+                - ${OAUTH2_REDIRECT_URI_WEB:http://localhost:3000/login/oauth2/code/food-delivery}
+              scopes:
+                - openid
+                - profile
+                - email
+                - roles
+              client-settings:
+                require-authorization-consent: true
+          food-delivery-mobile:
+            registration:
+              client-id: ${OAUTH2_CLIENT_ID_MOBILE:food-delivery-mobile}
+              client-secret: ${OAUTH2_CLIENT_SECRET_MOBILE:{noop}secret-mobile}
+              client-authentication-methods:
+                - client_secret_basic
+              authorization-grant-types:
+                - authorization_code
+                - refresh_token
+                - client_credentials
+              redirect-uris:
+                - ${OAUTH2_REDIRECT_URI_MOBILE:fooddelivery://oauth2/callback}
+              scopes:
+                - openid
+                - profile
+                - email
+                - roles
+              client-settings:
+                require-authorization-consent: false
+
+server:
+  port: 8080
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:replace-with-secure-secret}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+    issuer: ${JWT_ISSUER:food-delivery-api}
+
+app:
+  otp:
+    length: ${OTP_LENGTH:6}
+    ttl-minutes: ${OTP_TTL_MINUTES:10}
+  mail:
+    from: ${MAIL_FROM:noreply@food-delivery.local}
+    brand-name: ${MAIL_BRAND_NAME:Food Delivery}
+  oauth2:
+    access-token-ttl-minutes: ${OAUTH2_ACCESS_TOKEN_TTL:30}
+    refresh-token-ttl-minutes: ${OAUTH2_REFRESH_TOKEN_TTL:1440}
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8091/eureka/
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    try-it-out-enabled: true
