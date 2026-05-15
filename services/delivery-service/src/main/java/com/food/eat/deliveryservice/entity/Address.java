@@ -4,11 +4,16 @@ import com.food.eat.common.entity.BaseEntity;
 import com.food.eat.deliveryservice.enums.AddressType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+@EqualsAndHashCode(callSuper = true)
 @Data
-@Document(collation = "addresses")
+@Document(collection = "addresses")
 public class Address extends BaseEntity {
 
     @Id
@@ -16,10 +21,9 @@ public class Address extends BaseEntity {
 
     private Long userId;
 
-    private String fullName;
-    private String phoneNumber;
-    private String addressLine1;
-    private String addressLine2;
+    private String name;
+    private String phone;
+    private String address;
     private String district;
     private String city;
     private String province;

@@ -1,5 +1,5 @@
 package com.food.eat.deliveryservice.enums;
 
-public enum DeliverType {
+public enum DriverType {
     BIKE ,MOTOR, CAR, DRONE
 }

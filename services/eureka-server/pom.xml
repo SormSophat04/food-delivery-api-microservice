@@ -44,7 +44,6 @@
             <artifactId>opentelemetry-javaagent</artifactId>
             <version>2.27.0</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
@@ -73,6 +72,15 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <configuration>
+                    <to>
+                        <image>food-delivery/${project.artifactId}:v1</image>
+                    </to>
+                </configuration>
             </plugin>
         </plugins>
     </build>

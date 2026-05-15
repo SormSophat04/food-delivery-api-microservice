@@ -1,11 +1,11 @@
 package com.food.eat.deliveryservice.service.impl;
 
+import com.food.eat.deliveryservice.client.AuthServiceClient;
 import com.food.eat.deliveryservice.dto.request.AddressRequest;
 import com.food.eat.deliveryservice.dto.response.AddressResponse;
 import com.food.eat.deliveryservice.entity.Address;
 import com.food.eat.deliveryservice.mapper.AddressMapper;
 import com.food.eat.deliveryservice.repository.AddressRepository;
-import com.food.eat.deliveryservice.repository.UserCacheRepository;
 import com.food.eat.deliveryservice.service.AddressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,11 +20,11 @@ public class AddressServiceImpl implements AddressService {
 
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
-    private final UserCacheRepository userCacheRepository;
+    private final AuthServiceClient authServiceClient;
 
     @Override
     public AddressResponse createAddress(Long userId, AddressRequest request) {
-        validateUserExists(userId);
+        authServiceClient.getUserById(userId);
 
         Address address = addressMapper.toEntity(request);
         address.setUserId(userId);
@@ -34,7 +34,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public List<AddressResponse> getAddresses(Long userId) {
-        validateUserExists(userId);
+        authServiceClient.getUserById(userId);
 
         return addressRepository.findByUserId(userId).stream()
                 .map(addressMapper::toResponse)
@@ -43,7 +43,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public AddressResponse getAddress(Long userId, String addressId) {
-        validateUserExists(userId);
+        authServiceClient.getUserById(userId);
 
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
@@ -57,7 +57,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public AddressResponse updateAddress(Long userId, String addressId, AddressRequest request) {
-        validateUserExists(userId);
+        authServiceClient.getUserById(userId);
 
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
@@ -73,7 +73,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public void deleteAddress(Long userId, String addressId) {
-        validateUserExists(userId);
+        authServiceClient.getUserById(userId);
 
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
@@ -83,11 +83,5 @@ public class AddressServiceImpl implements AddressService {
         }
 
         addressRepository.delete(address);
-    }
-
-    private void validateUserExists(Long userId) {
-        if (!userCacheRepository.existsByUserId(userId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + userId);
-        }
     }
 }

@@ -16,6 +16,7 @@ public interface AddressMapper {
     @Mapping(target = "updatedAt", ignore = true)
     Address toEntity(AddressRequest request);
 
+    @Mapping(target = "id", source = "addressId")
     AddressResponse toResponse(Address address);
 
     @Mapping(target = "addressId", ignore = true)

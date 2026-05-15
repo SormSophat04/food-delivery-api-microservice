@@ -1,0 +1,13 @@
+package com.food.eat.restaurantservice.client;
+
+import com.food.eat.restaurantservice.dto.response.UserResponse;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+@FeignClient(name = "auth-service", path = "/api/users")
+public interface AuthServiceClient {
+
+    @GetMapping("/{id}")
+    UserResponse getUserById(@PathVariable("id") Long userId);
+}

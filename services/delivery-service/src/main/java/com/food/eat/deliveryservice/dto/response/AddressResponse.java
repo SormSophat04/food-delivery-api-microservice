@@ -3,7 +3,7 @@ package com.food.eat.deliveryservice.dto.response;
 import com.food.eat.deliveryservice.enums.AddressType;
 
 public record AddressResponse(
-        Long id,
+        String id,
         String fullName,
         String phoneNumber,
         String addressLine1,
