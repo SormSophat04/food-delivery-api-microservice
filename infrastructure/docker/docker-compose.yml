@@ -107,7 +107,7 @@ services:
       context: ../../services/eureka-server
       dockerfile: ../../infrastructure/docker/Dockerfile
     ports:
-      - "8091:8091"
+      - "8095:8091"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - CONFIG_SERVER_URI=http://config-server:8090

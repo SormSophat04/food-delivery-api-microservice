@@ -16,7 +16,7 @@ public interface UserService {
 
     ApiMessageResponse register(RegisterRequest registerRequest);
 
-    ApiMessageResponse verifyRegisterCode(VerifyCodeRequest verifyCodeRequest);
+    AuthResponse verifyRegisterCode(VerifyCodeRequest verifyCodeRequest);
 
     ApiMessageResponse login(LoginRequest loginRequest);
 

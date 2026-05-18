@@ -35,7 +35,6 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -99,12 +98,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ApiMessageResponse verifyRegisterCode(VerifyCodeRequest verifyCodeRequest) {
+    public AuthResponse verifyRegisterCode(VerifyCodeRequest verifyCodeRequest) {
         User user = userRepository.findByEmail(verifyCodeRequest.email())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         if (user.isEnabled()) {
-            return new ApiMessageResponse("Account already verified");
+            return generateAuthTokens(user);
         }
 
         EmailVerificationCode code = getActiveCode(verifyCodeRequest.email(), OtpPurpose.REGISTER);
@@ -128,7 +127,7 @@ public class UserServiceImpl implements UserService {
             ));
         }
 
-        return new ApiMessageResponse("Account verified successfully");
+        return generateAuthTokens(user);
     }
 
     @Override
@@ -164,10 +163,10 @@ public class UserServiceImpl implements UserService {
         code.setVerified(true);
         emailVerificationCodeRepository.save(code);
 
-        return generateOAuth2Tokens(user);
+        return generateAuthTokens(user);
     }
 
-    public AuthResponse generateOAuth2Tokens(User user) {
+    public AuthResponse generateAuthTokens(User user) {
         AuthUser authUser = toAuthUser(user);
         String accessToken = jwtUtil.generateAccessToken(user.getEmail(), authUser.getAuthorities());
 
@@ -179,12 +178,14 @@ public class UserServiceImpl implements UserService {
                 accessToken,
                 jwtUtil.getExpirationMs(),
                 refreshTokenValue,
-                "openid profile email roles",
+                "roles",
                 toUserResponse(user)
         );
     }
 
     private void saveRefreshToken(String token, String userEmail) {
+        refreshTokenRepository.deleteByUserEmail(userEmail);
+
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setToken(token);
         refreshToken.setUserEmail(userEmail);

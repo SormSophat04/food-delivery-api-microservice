@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @PostMapping("/register/verify-code")
-    public ResponseEntity<ApiMessageResponse> verifyRegisterCode(@Valid @RequestBody VerifyCodeRequest request) {
+    public ResponseEntity<AuthResponse> verifyRegisterCode(@Valid @RequestBody VerifyCodeRequest request) {
         return ResponseEntity.ok(userService.verifyRegisterCode(request));
     }
 
