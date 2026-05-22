@@ -1,0 +1,5 @@
+{{- $services := .Values.services -}}
+{{- $s := index $services "food-service" -}}
+{{- if $s.enabled }}
+{{ include "food-delivery.service" (dict "service" $s "ctx" .) }}
+{{- end }}

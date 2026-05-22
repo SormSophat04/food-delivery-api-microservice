@@ -1,0 +1,6 @@
+dependencies:
+- name: food-delivery-common
+  repository: file://../../../food-delivery-common
+  version: 0.1.0
+digest: sha256:5182055bfb828b348c8aa82ed142a0e9f086964d83347a6c02e321a8e2248ee1
+generated: "2026-05-21T15:29:20.1918683+07:00"

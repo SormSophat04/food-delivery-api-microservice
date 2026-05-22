@@ -8,10 +8,12 @@ import com.food.eat.authservice.dto.response.ApiMessageResponse;
 import com.food.eat.authservice.dto.response.AuthResponse;
 import com.food.eat.authservice.dto.response.UserResponse;
 import com.food.eat.authservice.entity.EmailVerificationCode;
+import com.food.eat.authservice.entity.RefreshToken;
 import com.food.eat.authservice.enums.OtpPurpose;
 import com.food.eat.authservice.entity.User;
 import com.food.eat.authservice.jwt.JwtUtil;
 import com.food.eat.authservice.repository.EmailVerificationCodeRepository;
+import com.food.eat.authservice.repository.RefreshTokenRepository;
 import com.food.eat.authservice.repository.UserRepository;
 import com.food.eat.authservice.security.AuthUser;
 import com.food.eat.authservice.service.EmailService;
@@ -30,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -44,6 +47,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final EmailVerificationCodeRepository emailVerificationCodeRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final JwtUtil jwtUtil;
@@ -94,12 +98,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ApiMessageResponse verifyRegisterCode(VerifyCodeRequest verifyCodeRequest) {
+    public AuthResponse verifyRegisterCode(VerifyCodeRequest verifyCodeRequest) {
         User user = userRepository.findByEmail(verifyCodeRequest.email())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         if (user.isEnabled()) {
-            return new ApiMessageResponse("Account already verified");
+            return generateAuthTokens(user);
         }
 
         EmailVerificationCode code = getActiveCode(verifyCodeRequest.email(), OtpPurpose.REGISTER);
@@ -123,7 +127,7 @@ public class UserServiceImpl implements UserService {
             ));
         }
 
-        return new ApiMessageResponse("Account verified successfully");
+        return generateAuthTokens(user);
     }
 
     @Override
@@ -159,15 +163,34 @@ public class UserServiceImpl implements UserService {
         code.setVerified(true);
         emailVerificationCodeRepository.save(code);
 
+        return generateAuthTokens(user);
+    }
+
+    public AuthResponse generateAuthTokens(User user) {
         AuthUser authUser = toAuthUser(user);
-        String token = jwtUtil.generateToken(user.getEmail(), authUser.getAuthorities());
+        String accessToken = jwtUtil.generateAccessToken(user.getEmail(), authUser.getAuthorities());
+
+        String refreshTokenValue = jwtUtil.generateRefreshToken(user.getEmail());
+        saveRefreshToken(refreshTokenValue, user.getEmail());
 
         return new AuthResponse(
                 "Bearer",
-                token,
+                accessToken,
                 jwtUtil.getExpirationMs(),
+                refreshTokenValue,
+                "roles",
                 toUserResponse(user)
         );
+    }
+
+    private void saveRefreshToken(String token, String userEmail) {
+        refreshTokenRepository.deleteByUserEmail(userEmail);
+
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setToken(token);
+        refreshToken.setUserEmail(userEmail);
+        refreshToken.setExpiresAt(Instant.now().plusSeconds(86400));
+        refreshTokenRepository.save(refreshToken);
     }
 
     private void sendCode(String email, OtpPurpose purpose) {

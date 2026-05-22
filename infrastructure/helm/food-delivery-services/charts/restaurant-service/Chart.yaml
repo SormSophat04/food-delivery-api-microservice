@@ -1,0 +1,10 @@
+apiVersion: v2
+name: restaurant-service
+description: Restaurant management service for Food Delivery
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+dependencies:
+  - name: food-delivery-common
+    version: 0.2.0
+    repository: file://../../../food-delivery-common

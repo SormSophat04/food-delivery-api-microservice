@@ -1,23 +1,34 @@
 package com.food.eat.authservice.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JOSEObjectType;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class JwtUtil {
 
-    @Value("${security.jwt.secret}")
-    private String secret;
+    private static final int MIN_SECRET_BYTES = 32;
+
+    private final JWSSigner signer;
+    private final JWSVerifier verifier;
+    private final String keyId = UUID.randomUUID().toString();
 
     @Value("${security.jwt.expiration-ms}")
     private Long expirationMs;
@@ -25,45 +36,89 @@ public class JwtUtil {
     @Value("${security.jwt.issuer}")
     private String issuer;
 
-    public String generateToken(String subject, Collection<? extends GrantedAuthority> authorities) {
+    public JwtUtil(@Value("${security.jwt.secret}") String secret) {
+        byte[] normalizedSecretBytes = normalizeSecret(secret).getBytes(StandardCharsets.UTF_8);
+        try {
+            this.signer = new MACSigner(normalizedSecretBytes);
+            this.verifier = new MACVerifier(normalizedSecretBytes);
+        } catch (JOSEException e) {
+            throw new IllegalStateException("Failed to initialize JWT signer/verifier", e);
+        }
+    }
+
+    public String generateAccessToken(String subject, Collection<? extends GrantedAuthority> authorities) {
         List<String> authoritiesStr = authorities.stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
-        Date now = new Date(System.currentTimeMillis());
-        Date expirationDate = new Date(now.getTime() + expirationMs);
+        Instant now = Instant.now();
+        Instant expiresAt = now.plusMillis(expirationMs);
 
-        return Jwts.builder()
-                .subject(subject)
+        JWTClaimsSet claims = new JWTClaimsSet.Builder()
                 .issuer(issuer)
-                .issuedAt(now)
-                .expiration(expirationDate)
+                .subject(subject)
+                .issueTime(Date.from(now))
+                .expirationTime(Date.from(expiresAt))
+                .jwtID(UUID.randomUUID().toString())
                 .claim("authorities", authoritiesStr)
-                .signWith(signingKey())
-                .compact();
+                .claim("scope", String.join(" ", authoritiesStr))
+                .build();
+
+        return signToken(claims);
     }
 
-    public Claims parseToken(String token) {
-        return Jwts.parser()
-                .verifyWith(signingKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+    public String generateRefreshToken(String subject) {
+        Instant now = Instant.now();
+        Instant expiresAt = now.plusSeconds(86400);
+
+        JWTClaimsSet claims = new JWTClaimsSet.Builder()
+                .issuer(issuer)
+                .subject(subject)
+                .issueTime(Date.from(now))
+                .expirationTime(Date.from(expiresAt))
+                .jwtID(UUID.randomUUID().toString())
+                .claim("type", "refresh")
+                .build();
+
+        return signToken(claims);
+    }
+
+    public JWTClaimsSet parseToken(String token) {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            if (!signedJWT.verify(verifier)) {
+                throw new IllegalArgumentException("Invalid token signature");
+            }
+            return signedJWT.getJWTClaimsSet();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid token", e);
+        }
     }
 
     public long getExpirationMs() {
         return expirationMs;
     }
 
-    private SecretKey signingKey() {
-        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
-        if (keyBytes.length < 32) {
-            String paddedSecret = secret;
-            while (paddedSecret.getBytes(StandardCharsets.UTF_8).length < 32) {
-                paddedSecret += "0";
-            }
-            return Keys.hmacShaKeyFor(paddedSecret.getBytes(StandardCharsets.UTF_8));
+    private String signToken(JWTClaimsSet claims) {
+        try {
+            JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.HS256)
+                    .type(JOSEObjectType.JWT)
+                    .keyID(keyId)
+                    .build();
+
+            SignedJWT signedJWT = new SignedJWT(header, claims);
+            signedJWT.sign(signer);
+            return signedJWT.serialize();
+        } catch (JOSEException e) {
+            throw new IllegalStateException("Failed to sign token", e);
         }
-        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private String normalizeSecret(String secret) {
+        String normalized = secret;
+        while (normalized.getBytes(StandardCharsets.UTF_8).length < MIN_SECRET_BYTES) {
+            normalized += "0";
+        }
+        return normalized;
     }
 }

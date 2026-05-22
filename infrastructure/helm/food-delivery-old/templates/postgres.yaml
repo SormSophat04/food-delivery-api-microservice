@@ -1,0 +1,69 @@
+{{- if .Values.infrastructure.postgres.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.infrastructure.postgres.name }}
+  namespace: {{ include "food-delivery.namespace" . }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Values.infrastructure.postgres.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.infrastructure.postgres.name }}
+    spec:
+      containers:
+        - name: {{ .Values.infrastructure.postgres.name }}
+          image: "{{ .Values.infrastructure.postgres.image }}:{{ .Values.infrastructure.postgres.imageTag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.infrastructure.postgres.port }}
+          env:
+            - name: POSTGRES_DB
+              value: {{ .Values.infrastructure.postgres.database }}
+            - name: POSTGRES_USER
+              value: {{ .Values.infrastructure.postgres.username }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.infrastructure.postgres.password }}
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.infrastructure.postgres.name }}-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.infrastructure.postgres.name }}-pvc
+  namespace: {{ include "food-delivery.namespace" . }}
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.infrastructure.postgres.storageClassName }}
+  storageClassName: {{ .Values.infrastructure.postgres.storageClassName }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.infrastructure.postgres.storage }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.infrastructure.postgres.name }}
+  namespace: {{ include "food-delivery.namespace" . }}
+spec:
+  selector:
+    app: {{ .Values.infrastructure.postgres.name }}
+  ports:
+    - port: {{ .Values.infrastructure.postgres.port }}
+      targetPort: {{ .Values.infrastructure.postgres.port }}
+  type: ClusterIP
+{{- end }}

@@ -1,0 +1,41 @@
+{{- if .Values.zookeeper.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.zookeeper.name }}
+  namespace: {{ include "infra.namespace" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.zookeeper.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.zookeeper.name }}
+    spec:
+      containers:
+        - name: {{ .Values.zookeeper.name }}
+          image: "{{ .Values.zookeeper.image }}:{{ .Values.zookeeper.imageTag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.zookeeper.port }}
+          env:
+            - name: ZOOKEEPER_CLIENT_PORT
+              value: "{{ .Values.zookeeper.port }}"
+            - name: ZOOKEEPER_TICK_TIME
+              value: "{{ .Values.zookeeper.tickTime }}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.zookeeper.name }}
+  namespace: {{ include "infra.namespace" . }}
+spec:
+  selector:
+    app: {{ .Values.zookeeper.name }}
+  ports:
+    - port: {{ .Values.zookeeper.port }}
+      targetPort: {{ .Values.zookeeper.port }}
+  type: ClusterIP
+{{- end }}

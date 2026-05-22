@@ -1,0 +1,28 @@
+{{- define "common.configmap" -}}
+{{- $namespace := .Values.global.namespace | default "food-delivery-system" -}}
+{{- $postgresHost := .Values.global.postgresHost | default "postgres" -}}
+{{- $postgresPort := .Values.global.postgresPort | default "5432" -}}
+{{- $postgresDb := .Values.global.postgresDatabase | default "food_delivery" -}}
+{{- $postgresUser := .Values.global.postgresUsername | default "postgres" -}}
+{{- $postgresPass := .Values.global.postgresPassword | default "pg12345" -}}
+{{- $mongoHost := .Values.global.mongodbHost | default "mongodb" -}}
+{{- $mongoPort := .Values.global.mongodbPort | default "27017" -}}
+{{- $mongoDb := .Values.global.mongodbDatabase | default "delivery_service_db" -}}
+{{- $kafkaHost := .Values.global.kafkaHost | default "kafka" -}}
+{{- $kafkaPort := .Values.global.kafkaPort | default "9092" -}}
+{{- $eurekaURL := .Values.global.eurekaServerURL | default (printf "http://eureka-server:%s/eureka/" (.Values.global.eurekaServerPort | default "8091")) -}}
+{{- $configURL := .Values.global.configServerURL | default (printf "http://config-server:%s" (.Values.global.configServerPort | default "8090")) -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.global.configMapName }}
+data:
+  DB_URL: jdbc:postgresql://{{ $postgresHost }}:{{ $postgresPort }}/{{ $postgresDb }}
+  DB_USERNAME: {{ $postgresUser }}
+  DB_PASSWORD: {{ $postgresPass }}
+  JPA_DDL_AUTO: update
+  SPRING_DATA_MONGODB_URI: "mongodb://{{ $mongoHost }}:{{ $mongoPort }}/{{ $mongoDb }}"
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "{{ $kafkaHost }}:{{ $kafkaPort }}"
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: {{ $eurekaURL }}
+  SPRING_CLOUD_CONFIG_URI: {{ $configURL }}
+{{- end -}}

@@ -1,0 +1,24 @@
+global:
+  namespace: food-delivery-system
+  imageRegistry: food-delivery
+  imageTag: v1
+  configMapName: food-delivery-configmap
+  postgresHost: postgres
+  postgresPort: "5432"
+  postgresDatabase: food_delivery
+  postgresUsername: postgres
+  postgresPassword: pg12345
+  mongodbHost: mongodb
+  mongodbPort: "27017"
+  mongodbDatabase: delivery_service_db
+  kafkaHost: kafka
+  kafkaPort: "9092"
+  eurekaServerURL: http://eureka-server:8091/eureka/
+  eurekaServerPort: "8091"
+  configServerURL: http://config-server:8090
+  configServerPort: "8090"
+
+config-server:
+  extraEnv:
+    - name: SPRING_PROFILES_ACTIVE
+      value: native
