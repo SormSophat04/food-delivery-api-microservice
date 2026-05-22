@@ -1,0 +1,18 @@
+deploymentName: gateway-server
+serviceName: gateway-server
+appLabel: gateway-server
+appName: gateway-server
+replicaCount: 1
+image:
+  repository: gateway-server
+containerPort: 8092
+service:
+  type: NodePort
+  port: 80
+  targetPort: 8092
+  nodePort: 30080
+postgres_enabled: false
+mongo_enabled: false
+kafka_enabled: false
+eureka_enabled: true
+config_enabled: true

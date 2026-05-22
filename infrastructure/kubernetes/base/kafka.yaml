@@ -19,6 +19,10 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9092
+          command:
+            - sh
+            - -c
+            - unset KAFKA_PORT KAFKA_PORT_9092_TCP KAFKA_PORT_9092_TCP_PROTO KAFKA_PORT_9092_TCP_ADDR KAFKA_PORT_9092_TCP_PORT KAFKA_SERVICE_PORT KAFKA_SERVICE_HOST; /etc/confluent/docker/run
           env:
             - name: KAFKA_BROKER_ID
               value: "1"
@@ -34,3 +38,28 @@ spec:
               value: PLAINTEXT
             - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
               value: "1"
+            - name: KAFKA_HEAP_OPTS
+              value: "-Xmx256M -Xms128M"
+            - name: KAFKA_LOG4J_LOGGERS
+              value: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: food-delivery-system
+spec:
+  selector:
+    app: kafka
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 9092
+      targetPort: 9092

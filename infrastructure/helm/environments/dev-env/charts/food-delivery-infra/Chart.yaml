@@ -1,0 +1,6 @@
+apiVersion: v2
+name: food-delivery-infra
+description: Infrastructure components for Food Delivery (PostgreSQL, MongoDB, Kafka, Zookeeper)
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

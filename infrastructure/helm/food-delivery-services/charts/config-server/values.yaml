@@ -1,0 +1,20 @@
+deploymentName: config-server
+serviceName: config-server
+appLabel: config-server
+appName: config-server
+replicaCount: 1
+image:
+  repository: config-server
+containerPort: 8090
+service:
+  type: ClusterIP
+  port: 8090
+  targetPort: 8090
+postgres_enabled: false
+mongo_enabled: false
+kafka_enabled: false
+eureka_enabled: false
+config_enabled: false
+extraEnv:
+  - name: SPRING_PROFILES_ACTIVE
+    value: native

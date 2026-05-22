@@ -1,0 +1,65 @@
+{{- if .Values.infrastructure.mongodb.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.infrastructure.mongodb.name }}
+  namespace: {{ include "food-delivery.namespace" . }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Values.infrastructure.mongodb.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.infrastructure.mongodb.name }}
+    spec:
+      containers:
+        - name: {{ .Values.infrastructure.mongodb.name }}
+          image: "{{ .Values.infrastructure.mongodb.image }}:{{ .Values.infrastructure.mongodb.imageTag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.infrastructure.mongodb.port }}
+          env:
+            - name: MONGO_INITDB_DATABASE
+              value: {{ .Values.infrastructure.mongodb.database | default "food_delivery" }}
+          volumeMounts:
+            - name: mongodb-data
+              mountPath: /data/db
+      volumes:
+        - name: mongodb-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.infrastructure.mongodb.name }}-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.infrastructure.mongodb.name }}-pvc
+  namespace: {{ include "food-delivery.namespace" . }}
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.infrastructure.mongodb.storageClassName }}
+  storageClassName: {{ .Values.infrastructure.mongodb.storageClassName }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.infrastructure.mongodb.storage }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.infrastructure.mongodb.name }}
+  namespace: {{ include "food-delivery.namespace" . }}
+spec:
+  selector:
+    app: {{ .Values.infrastructure.mongodb.name }}
+  ports:
+    - port: {{ .Values.infrastructure.mongodb.port }}
+      targetPort: {{ .Values.infrastructure.mongodb.port }}
+  type: ClusterIP
+{{- end }}

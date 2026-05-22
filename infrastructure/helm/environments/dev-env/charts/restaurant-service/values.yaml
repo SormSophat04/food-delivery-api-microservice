@@ -1,0 +1,17 @@
+deploymentName: restaurant-service
+serviceName: restaurant-service
+appLabel: restaurant-service
+appName: restaurant-service
+replicaCount: 1
+image:
+  repository: restaurant-service
+containerPort: 8084
+service:
+  type: ClusterIP
+  port: 8084
+  targetPort: 8084
+postgres_enabled: true
+mongo_enabled: false
+kafka_enabled: true
+eureka_enabled: true
+config_enabled: true

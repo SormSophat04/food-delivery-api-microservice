@@ -1,0 +1,17 @@
+deploymentName: eureka-server
+serviceName: eureka-server
+appLabel: eureka-server
+appName: eureka-server
+replicaCount: 1
+image:
+  repository: eureka-server
+containerPort: 8091
+service:
+  type: ClusterIP
+  port: 8091
+  targetPort: 8091
+postgres_enabled: false
+mongo_enabled: false
+kafka_enabled: false
+eureka_enabled: false
+config_enabled: true

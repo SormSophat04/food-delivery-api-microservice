@@ -1,0 +1,44 @@
+global:
+  namespace: food-delivery-system
+
+postgres:
+  enabled: true
+  name: postgres
+  port: 5432
+  host: postgres
+  database: food_delivery
+  username: postgres
+  password: pg12345
+  image: postgres
+  imageTag: "16"
+  storage: 1Gi
+  storageClassName: ""
+
+mongodb:
+  enabled: true
+  name: mongodb
+  port: 27017
+  host: mongodb
+  image: mongo
+  imageTag: "7.0"
+  database: delivery_service_db
+  storage: 1Gi
+  storageClassName: ""
+
+zookeeper:
+  enabled: true
+  name: zookeeper
+  port: 2181
+  tickTime: 2000
+  image: confluentinc/cp-zookeeper
+  imageTag: "7.5.0"
+
+kafka:
+  enabled: true
+  name: kafka
+  port: 9092
+  brokerId: "1"
+  zookeeper: zookeeper
+  zookeeperPort: 2181
+  image: confluentinc/cp-kafka
+  imageTag: "7.5.0"

@@ -1,0 +1,17 @@
+deploymentName: auth-service
+serviceName: auth-service
+appLabel: auth-service
+appName: auth-service
+replicaCount: 1
+image:
+  repository: auth-service
+containerPort: 8080
+service:
+  type: LoadBalancer
+  port: 8080
+  targetPort: 8080
+postgres_enabled: true
+mongo_enabled: false
+kafka_enabled: true
+eureka_enabled: true
+config_enabled: true

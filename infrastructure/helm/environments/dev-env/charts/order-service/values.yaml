@@ -1,0 +1,17 @@
+deploymentName: order-service
+serviceName: order-service
+appLabel: order-service
+appName: order-service
+replicaCount: 1
+image:
+  repository: order-service
+containerPort: 8083
+service:
+  type: ClusterIP
+  port: 8083
+  targetPort: 8083
+postgres_enabled: true
+mongo_enabled: false
+kafka_enabled: true
+eureka_enabled: true
+config_enabled: true

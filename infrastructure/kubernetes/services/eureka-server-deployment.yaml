@@ -16,6 +16,7 @@ spec:
       containers:
         - name: eureka-server
           image: food-delivery/eureka-server:v1
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8091
           envFrom:

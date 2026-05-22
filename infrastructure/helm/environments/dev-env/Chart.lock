@@ -1,0 +1,33 @@
+dependencies:
+- name: food-delivery-common
+  repository: file://../../food-delivery-common
+  version: 0.1.0
+- name: food-delivery-infra
+  repository: file://../../food-delivery-infra
+  version: 0.1.0
+- name: config-server
+  repository: file://../../food-delivery-services/charts/config-server
+  version: 0.1.0
+- name: eureka-server
+  repository: file://../../food-delivery-services/charts/eureka-server
+  version: 0.1.0
+- name: gateway-server
+  repository: file://../../food-delivery-services/charts/gateway-server
+  version: 0.1.0
+- name: auth-service
+  repository: file://../../food-delivery-services/charts/auth-service
+  version: 0.1.0
+- name: food-service
+  repository: file://../../food-delivery-services/charts/food-service
+  version: 0.1.0
+- name: order-service
+  repository: file://../../food-delivery-services/charts/order-service
+  version: 0.1.0
+- name: restaurant-service
+  repository: file://../../food-delivery-services/charts/restaurant-service
+  version: 0.1.0
+- name: delivery-service
+  repository: file://../../food-delivery-services/charts/delivery-service
+  version: 0.1.0
+digest: sha256:bc63b28754a4f033e549c66ca999133331c4b5bf5e2a9e61fd415baed537350a
+generated: "2026-05-21T15:24:03.0319128+07:00"

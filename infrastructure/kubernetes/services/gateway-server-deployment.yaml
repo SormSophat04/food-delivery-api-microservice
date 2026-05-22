@@ -22,6 +22,12 @@ spec:
           envFrom:
             - configMapRef:
                 name: food-delivery-system
+          env:
+            - name: SPRING_APPLICATION_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: food-delivery-system
+                  key: GATEWAY_APPLICATION_NAME
           resources:
             requests:
               memory: "256Mi"

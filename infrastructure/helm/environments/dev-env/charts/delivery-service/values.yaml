@@ -1,0 +1,17 @@
+deploymentName: delivery-service
+serviceName: delivery-service
+appLabel: delivery-service
+appName: delivery-service
+replicaCount: 1
+image:
+  repository: delivery-service
+containerPort: 8082
+service:
+  type: ClusterIP
+  port: 8082
+  targetPort: 8082
+postgres_enabled: false
+mongo_enabled: true
+kafka_enabled: true
+eureka_enabled: true
+config_enabled: true

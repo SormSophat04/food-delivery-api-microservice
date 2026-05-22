@@ -1,0 +1,118 @@
+global:
+  namespace: food-delivery-system
+  imageRegistry: food-delivery
+  imageTag: v1
+
+infrastructure:
+  postgres:
+    enabled: true
+    name: postgres
+    port: 5432
+    host: postgres
+    database: food_delivery
+    username: postgres
+    password: pg12345
+    image: postgres
+    imageTag: "16"
+    storage: 1Gi
+    storageClassName: ""
+
+  mongodb:
+    enabled: true
+    name: mongodb
+    port: 27017
+    host: mongodb
+    image: mongo
+    imageTag: "7.0"
+    database: delivery_service_db
+    storage: 1Gi
+    storageClassName: ""
+
+  zookeeper:
+    enabled: true
+    name: zookeeper
+    port: 2181
+    tickTime: 2000
+    image: confluentinc/cp-zookeeper
+    imageTag: "7.5.0"
+
+  kafka:
+    enabled: true
+    name: kafka
+    port: 9092
+    brokerId: "1"
+    zookeeper: zookeeper
+    zookeeperPort: 2181
+    image: confluentinc/cp-kafka
+    imageTag: "7.5.0"
+
+services:
+  config-server:
+    enabled: true
+    name: config-server
+    port: 8090
+    replicas: 1
+    profiles: native
+    image: config-server
+
+  eureka-server:
+    enabled: true
+    name: eureka-server
+    port: 8091
+    replicas: 1
+    image: eureka-server
+
+  gateway-server:
+    enabled: true
+    name: gateway-server
+    port: 8092
+    replicas: 1
+    image: gateway-server
+    serviceType: NodePort
+    externalPort: 80
+    nodePort: 30080
+
+  auth-service:
+    enabled: true
+    name: auth-service
+    port: 8080
+    replicas: 1
+    image: auth-service
+    usesPostgres: true
+    usesKafka: true
+
+  food-service:
+    enabled: true
+    name: food-service
+    port: 8081
+    replicas: 1
+    image: food-service
+    usesPostgres: true
+    usesKafka: true
+
+  delivery-service:
+    enabled: true
+    name: delivery-service
+    port: 8082
+    replicas: 1
+    image: delivery-service
+    usesMongo: true
+    usesKafka: true
+
+  order-service:
+    enabled: true
+    name: order-service
+    port: 8083
+    replicas: 1
+    image: order-service
+    usesPostgres: true
+    usesKafka: true
+
+  restaurant-service:
+    enabled: true
+    name: restaurant-service
+    port: 8084
+    replicas: 1
+    image: restaurant-service
+    usesPostgres: true
+    usesKafka: true

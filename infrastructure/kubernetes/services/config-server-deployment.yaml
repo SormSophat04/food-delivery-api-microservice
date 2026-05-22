@@ -25,6 +25,8 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: native
+            - name: SPRING_CONFIG_IMPORT
+              value: ""
           resources:
             requests:
               memory: "256Mi"

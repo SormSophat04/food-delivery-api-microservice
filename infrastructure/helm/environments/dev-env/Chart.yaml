@@ -1,0 +1,47 @@
+apiVersion: v2
+name: dev-env
+description: Food Delivery development environment umbrella chart
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: food-delivery-common
+    version: 0.2.0
+    repository: file://../../food-delivery-common
+
+  - name: food-delivery-infra
+    version: 0.1.0
+    repository: file://../../food-delivery-infra
+
+  - name: config-server
+    version: 0.1.0
+    repository: file://../../food-delivery-services/charts/config-server
+
+  - name: eureka-server
+    version: 0.1.0
+    repository: file://../../food-delivery-services/charts/eureka-server
+
+  - name: gateway-server
+    version: 0.1.0
+    repository: file://../../food-delivery-services/charts/gateway-server
+
+  - name: auth-service
+    version: 0.1.0
+    repository: file://../../food-delivery-services/charts/auth-service
+
+  - name: food-service
+    version: 0.1.0
+    repository: file://../../food-delivery-services/charts/food-service
+
+  - name: order-service
+    version: 0.1.0
+    repository: file://../../food-delivery-services/charts/order-service
+
+  - name: restaurant-service
+    version: 0.1.0
+    repository: file://../../food-delivery-services/charts/restaurant-service
+
+  - name: delivery-service
+    version: 0.1.0
+    repository: file://../../food-delivery-services/charts/delivery-service
