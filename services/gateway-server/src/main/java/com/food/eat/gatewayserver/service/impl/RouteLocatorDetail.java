@@ -2,7 +2,6 @@ package com.food.eat.gatewayserver.service.impl;
 
 import com.food.eat.gatewayserver.entity.ApiRoute;
 import com.food.eat.gatewayserver.repository.ApiRouteRepository;
-import com.food.eat.gatewayserver.service.GatewayRouteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -17,7 +16,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class RouteLocatorImpl implements RouteLocator {
+public class RouteLocatorDetail implements RouteLocator {
 
     private final ApiRouteRepository apiRouteRepository;
     private final RouteLocatorBuilder routeLocatorBuilder;

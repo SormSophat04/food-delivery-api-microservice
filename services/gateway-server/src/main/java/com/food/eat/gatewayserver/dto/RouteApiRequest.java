@@ -1,20 +1,13 @@
 package com.food.eat.gatewayserver.dto;
 
-import java.time.LocalDateTime;
-
-public record RouteApiResponse(
-         String url,
+public record RouteApiRequest(
+         String uri,
          String path,
          String method,
          String description,
          String groupCode,
-         Integer reteLimit,
+         Integer rateLimit,
          Integer rateLimitDuration,
-         String status,
-         
-         LocalDateTime createTime,
-         String createBy,
-         LocalDateTime updateTime,
-         String updateBy
+         String status
 ) {
 }
