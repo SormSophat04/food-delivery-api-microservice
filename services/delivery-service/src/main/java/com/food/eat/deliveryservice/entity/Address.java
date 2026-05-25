@@ -2,10 +2,7 @@ package com.food.eat.deliveryservice.entity;
 
 import com.food.eat.common.entity.BaseEntity;
 import com.food.eat.deliveryservice.enums.AddressType;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
@@ -21,20 +18,12 @@ public class Address extends BaseEntity {
 
     private Long userId;
 
-    private String name;
-    private String phone;
-    private String address;
-    private String district;
-    private String city;
-    private String province;
-    private String postalCode;
-    private String country;
+    @Column(name = "address_detail")
+    private String addressDetail;
 
-    private Double latitude;
-    private Double longitude;
+    @Column(name = "address_type")
+    private String addressType;
 
-    private String landmark;
-
-    @Enumerated(EnumType.STRING)
-    private AddressType addressType;
+    private Double lat;
+    private Double lng;
 }

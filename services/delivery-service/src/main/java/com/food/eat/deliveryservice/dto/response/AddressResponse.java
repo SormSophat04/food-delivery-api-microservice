@@ -4,18 +4,9 @@ import com.food.eat.deliveryservice.enums.AddressType;
 
 public record AddressResponse(
         String id,
-        String fullName,
-        String phoneNumber,
-        String addressLine1,
-        String addressLine2,
-        String district,
-        String city,
-        String province,
-        String postalCode,
-        String country,
-        Double latitude,
-        Double longitude,
-        String landmark,
-        AddressType addressType
+        String addressDetail,
+        AddressType addressType,
+        Double lat,
+        Double lng
 ) {
 }

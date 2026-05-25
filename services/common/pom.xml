@@ -60,12 +60,17 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <configuration>
-                    <to>
-                        <image>food-delivery/${project.artifactId}:v1</image>
-                    </to>
+                    <skip>true</skip>
                 </configuration>
             </plugin>
             <plugin>

@@ -1,7 +1,7 @@
 global:
   namespace: food-delivery-system
   imageRegistry: food-delivery
-  imageTag: v1
+  imageTag: v2
   configMapName: food-delivery-configmap
   postgresHost: postgres
   postgresPort: "5432"

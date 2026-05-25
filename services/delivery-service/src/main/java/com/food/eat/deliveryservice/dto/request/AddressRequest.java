@@ -5,41 +5,18 @@ import jakarta.validation.constraints.*;
 
 public record AddressRequest(
 
-        @NotBlank(message = "Full name is required")
-        String fullName,
+        @NotBlank
+        String addressDetail,
 
         @NotBlank
-        @Size(max = 20)
-        String phoneNumber,
-
-        @NotBlank
-        String addressLine1,
-
-        String addressLine2,
-        String district,
-
-        @NotBlank
-        String city,
-
-        @NotBlank
-        String province,
-
-        String postalCode,
-
-        @NotBlank
-        String country,
+        String addressType,
 
         @DecimalMin(value = "-90.0")
         @DecimalMax(value = "90.0")
-        Double latitude,
+        Double lat,
 
         @DecimalMin(value = "-180.0")
         @DecimalMax(value = "180.0")
-        Double longitude,
-
-        String landmark,
-
-        @NotNull
-        AddressType addressType
+        Double lng
 
 ) {}

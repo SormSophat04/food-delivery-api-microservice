@@ -23,7 +23,7 @@ public class GatewayServerApplication {
                 .route(
                         p -> p.path("/food-delivery/auth/**")
                                 .filters(f -> f
-                                        .rewritePath("/food-delivery/auth/(?<segment>.*)", "/${segment}")
+                                        .rewritePath("/food-delivery/auth/(?<segment>.*)", "/api/auth/${segment}")
                                         .addResponseHeader("Auth-Response-Time", LocalDateTime.now().toString()))
                                 .uri("lb://AUTH-SERVICE")
                 ).route(

@@ -7,10 +7,13 @@ spring:
     password: ${DB_PASSWORD:pg12345}
   jpa:
     hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:update}
+      ddl-auto: ${JPA_DDL_AUTO:validate}
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -25,7 +28,7 @@ spring:
               packages: com.food.eat
 
 server:
-  port: 8084
+  port: 8089
 
 management:
   endpoints:

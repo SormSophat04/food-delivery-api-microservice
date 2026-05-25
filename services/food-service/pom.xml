@@ -117,7 +117,7 @@
                 <artifactId>jib-maven-plugin</artifactId>
                 <configuration>
                     <to>
-                        <image>food-delivery/${project.artifactId}:v1</image>
+                        <image>food-delivery/${project.artifactId}:v2</image>
                     </to>
                 </configuration>
             </plugin>
