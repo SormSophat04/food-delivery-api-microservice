@@ -1,4 +1,4 @@
-apiVersion: v2
+apiVersion: v3
 name: gateway-server
 description: Spring Cloud Gateway for Food Delivery
 type: application

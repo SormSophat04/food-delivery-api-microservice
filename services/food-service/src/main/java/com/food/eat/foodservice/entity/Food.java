@@ -14,16 +14,23 @@ public class Food {
     private Long foodId;
 
     private String name;
-    private Double price;
-    private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "price_id")
+    private Price price;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
-
-    private Boolean available;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "food_image_id")
     private FoodImage foodImage;
+
+    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "food_status_id")
+    private FoodStatus foodStatus;
+
+    private String description;
+    private Boolean available;
 }
