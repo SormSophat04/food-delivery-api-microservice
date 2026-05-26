@@ -5,12 +5,12 @@ appName: gateway-server
 replicaCount: 1
 image:
   repository: gateway-server
+  tag: v2
 containerPort: 8092
 service:
-  type: NodePort
-  port: 80
+  type: LoadBalancer
+  port: 8092
   targetPort: 8092
-  nodePort: 30080
 postgres_enabled: false
 mongo_enabled: false
 kafka_enabled: false
