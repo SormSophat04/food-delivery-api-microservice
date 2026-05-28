@@ -1,10 +1,11 @@
 package com.food.eat.foodservice.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
+@Entity
+@Table(name = "prices")
 public class Price {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

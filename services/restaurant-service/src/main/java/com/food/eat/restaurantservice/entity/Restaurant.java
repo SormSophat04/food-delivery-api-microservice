@@ -1,10 +1,9 @@
-package com.food.eat.restaurantservice.enitity;
+package com.food.eat.restaurantservice.entity;
 
+import com.food.eat.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.sql.Time;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

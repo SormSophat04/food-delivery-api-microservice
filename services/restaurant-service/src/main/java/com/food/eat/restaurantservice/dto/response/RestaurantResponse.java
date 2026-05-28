@@ -1,5 +1,7 @@
 package com.food.eat.restaurantservice.dto.response;
 
+import java.time.LocalDateTime;
+
 public record RestaurantResponse(
         Long restaurantId,
         Long ownerId,
@@ -10,5 +12,7 @@ public record RestaurantResponse(
         Double lng,
         String status,
         String opensAt,
-        String closesAt
+        String closesAt,
+        LocalDateTime createdAt
+
 ) {}

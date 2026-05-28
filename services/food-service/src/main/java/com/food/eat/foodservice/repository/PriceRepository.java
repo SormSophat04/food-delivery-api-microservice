@@ -1,4 +1,7 @@
 package com.food.eat.foodservice.repository;
 
-public interface PriceRepository {
+import com.food.eat.foodservice.entity.Price;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PriceRepository extends JpaRepository<Price, Long> {
 }

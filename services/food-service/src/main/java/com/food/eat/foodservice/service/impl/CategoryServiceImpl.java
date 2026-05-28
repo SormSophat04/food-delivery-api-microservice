@@ -6,12 +6,15 @@ import com.food.eat.foodservice.entity.Category;
 import com.food.eat.foodservice.repository.CategoryRepository;
 import com.food.eat.foodservice.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -74,6 +77,16 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
         categoryRepository.delete(category);
+    }
+
+    @Override
+    public Page<CategoryResponse> getCategoriesByRestaurant(Long restaurantId, Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public Page<CategoryResponse> getCategories(Pageable pageable) {
+        return null;
     }
 
     private CategoryResponse toResponse(Category category) {

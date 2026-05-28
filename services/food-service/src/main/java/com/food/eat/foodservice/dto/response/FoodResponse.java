@@ -1,11 +1,15 @@
 package com.food.eat.foodservice.dto.response;
 
+import java.util.List;
+
 public record FoodResponse(
         Long foodId,
         String name,
-        Double price,
         String description,
-        CategoryResponse category,
         Boolean available,
-        String image
+        PriceResponse price,
+        CategoryResponse category,
+        List<String> image,
+        List<FoodOptionResponse> foodOption,
+        List<FoodStatusResponse> foodStatus
 ) {}

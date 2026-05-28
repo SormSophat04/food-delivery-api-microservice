@@ -1,6 +1,6 @@
 package com.food.eat.restaurantservice.repository;
 
-import com.food.eat.restaurantservice.enitity.Restaurant;
+import com.food.eat.restaurantservice.entity.Restaurant;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

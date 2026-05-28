@@ -3,7 +3,9 @@ package com.food.eat.authservice.entity;
 import com.food.eat.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = "users")

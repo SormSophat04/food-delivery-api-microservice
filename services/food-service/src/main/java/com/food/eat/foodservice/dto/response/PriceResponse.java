@@ -1,4 +1,7 @@
 package com.food.eat.foodservice.dto.response;
 
-public record PriceReponse() {
+public record PriceResponse(
+        String originalPrice,
+        String discountPrice
+) {
 }

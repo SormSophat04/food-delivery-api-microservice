@@ -14,12 +14,12 @@ public class FoodOption {
     @Column(name = "food_option_id")
     private Long foodOptionId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "food_id")
-    private Food food;
-
     private String name;
 
     @Column(name = "extra_price")
     private BigDecimal extraPrice;
+
+    @ManyToOne
+    @JoinColumn(name = "food_id")
+    private Food food;
 }

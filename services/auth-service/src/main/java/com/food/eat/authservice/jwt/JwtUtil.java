@@ -5,9 +5,7 @@ import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSSigner;
-import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +25,6 @@ public class JwtUtil {
     private static final int MIN_SECRET_BYTES = 32;
 
     private final JWSSigner signer;
-    private final JWSVerifier verifier;
     private final String keyId = UUID.randomUUID().toString();
 
     @Value("${security.jwt.expiration-ms}")
@@ -40,9 +37,8 @@ public class JwtUtil {
         byte[] normalizedSecretBytes = normalizeSecret(secret).getBytes(StandardCharsets.UTF_8);
         try {
             this.signer = new MACSigner(normalizedSecretBytes);
-            this.verifier = new MACVerifier(normalizedSecretBytes);
         } catch (JOSEException e) {
-            throw new IllegalStateException("Failed to initialize JWT signer/verifier", e);
+            throw new IllegalStateException("Failed to initialize JWT signer", e);
         }
     }
 
@@ -81,18 +77,6 @@ public class JwtUtil {
                 .build();
 
         return signToken(claims);
-    }
-
-    public JWTClaimsSet parseToken(String token) {
-        try {
-            SignedJWT signedJWT = SignedJWT.parse(token);
-            if (!signedJWT.verify(verifier)) {
-                throw new IllegalArgumentException("Invalid token signature");
-            }
-            return signedJWT.getJWTClaimsSet();
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid token", e);
-        }
     }
 
     public long getExpirationMs() {

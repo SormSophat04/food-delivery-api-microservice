@@ -1,9 +1,12 @@
 package com.food.eat.restaurantservice.service.impl;
 
 import com.food.eat.restaurantservice.client.AuthServiceClient;
+import com.food.eat.restaurantservice.client.FoodServiceClient;
 import com.food.eat.restaurantservice.dto.request.RestaurantRequest;
+import com.food.eat.restaurantservice.dto.response.CategoryResponse;
 import com.food.eat.restaurantservice.dto.response.RestaurantResponse;
-import com.food.eat.restaurantservice.enitity.Restaurant;
+import com.food.eat.restaurantservice.entity.Restaurant;
+import com.food.eat.restaurantservice.mapper.RestaurantMapper;
 import com.food.eat.restaurantservice.repository.RestaurantRepository;
 import com.food.eat.restaurantservice.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
@@ -20,38 +23,30 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final AuthServiceClient authServiceClient;
+    private final FoodServiceClient foodServiceClient;
+    private final RestaurantMapper restaurantMapper;
 
     @Override
     @Transactional
     public RestaurantResponse createRestaurant(RestaurantRequest request) {
         authServiceClient.getUserById(request.ownerId());
 
-        Restaurant restaurant = new Restaurant();
-        restaurant.setOwnerId(request.ownerId());
-        restaurant.setName(request.name());
-        restaurant.setDescription(request.description());
-        restaurant.setPhone(request.phone());
-        restaurant.setLat(request.lat());
-        restaurant.setLng(request.lng());
-        restaurant.setStatus(request.status() != null ? request.status() : "ACTIVE");
-        restaurant.setOpensAt(request.opensAt());
-        restaurant.setClosesAt(request.closesAt());
-
+        Restaurant restaurant = restaurantMapper.toEntity(request);
         Restaurant saved = restaurantRepository.save(restaurant);
-        return toResponse(saved);
+        return restaurantMapper.toResponse(saved);
     }
 
     @Override
     public RestaurantResponse getRestaurantById(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Restaurant not found"));
-        return toResponse(restaurant);
+        return restaurantMapper.toResponse(restaurant);
     }
 
     @Override
     public List<RestaurantResponse> getAllRestaurants() {
         return restaurantRepository.findAll().stream()
-                .map(this::toResponse)
+                .map(restaurantMapper::toResponse)
                 .toList();
     }
 
@@ -59,7 +54,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public List<RestaurantResponse> getRestaurantsByOwner(Long ownerId) {
         authServiceClient.getUserById(ownerId);
         return restaurantRepository.findByOwnerId(ownerId).stream()
-                .map(this::toResponse)
+                .map(restaurantMapper::toResponse)
                 .toList();
     }
 
@@ -69,18 +64,16 @@ public class RestaurantServiceImpl implements RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Restaurant not found"));
 
-        restaurant.setOwnerId(request.ownerId());
-        restaurant.setName(request.name());
-        restaurant.setDescription(request.description());
-        restaurant.setPhone(request.phone());
-        restaurant.setLat(request.lat());
-        restaurant.setLng(request.lng());
-        restaurant.setStatus(request.status());
-        restaurant.setOpensAt(request.opensAt());
-        restaurant.setClosesAt(request.closesAt());
+        restaurantMapper.updateEntity(request, restaurant);
 
         Restaurant saved = restaurantRepository.save(restaurant);
-        return toResponse(saved);
+        return restaurantMapper.toResponse(saved);
+    }
+
+    @Override
+    public List<CategoryResponse> getCategoriesByRestaurant(Long restaurantId) {
+        getRestaurantById(restaurantId);
+        return foodServiceClient.getCategoriesByRestaurant(restaurantId);
     }
 
     @Override
@@ -91,11 +84,4 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurantRepository.delete(restaurant);
     }
 
-    private RestaurantResponse toResponse(Restaurant restaurant) {
-        return new RestaurantResponse(
-                restaurant.getRestaurantId(), restaurant.getOwnerId(),
-                restaurant.getName(), restaurant.getDescription(),
-                restaurant.getPhone(), restaurant.getLat(), restaurant.getLng(),
-                restaurant.getStatus(), restaurant.getOpensAt(), restaurant.getClosesAt());
-    }
 }
