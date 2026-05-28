@@ -1,7 +1,6 @@
 package com.food.eat.deliveryservice.entity;
 
 import com.food.eat.common.entity.BaseEntity;
-import com.food.eat.deliveryservice.enums.AddressType;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Address extends BaseEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String addressId;
 
     private Long userId;

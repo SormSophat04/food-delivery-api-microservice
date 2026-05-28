@@ -7,7 +7,7 @@ spring:
       - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
   data:
     mongodb:
-      uri: ${SPRING_DATA_MONGODB_URI:mongodb://mongo:27017/delivery_service_db}
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/delivery_service_db}
       auto-index-creation: true
   kafka:
     bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}

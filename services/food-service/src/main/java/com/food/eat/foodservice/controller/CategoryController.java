@@ -20,7 +20,8 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(request));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(categoryService.createCategory(request));
     }
 
     @GetMapping

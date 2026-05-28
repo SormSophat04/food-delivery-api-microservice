@@ -1,6 +1,7 @@
 package com.food.eat.restaurantservice.controller;
 
 import com.food.eat.restaurantservice.dto.request.RestaurantRequest;
+import com.food.eat.restaurantservice.dto.response.CategoryResponse;
 import com.food.eat.restaurantservice.dto.response.RestaurantResponse;
 import com.food.eat.restaurantservice.service.RestaurantService;
 import jakarta.validation.Valid;
@@ -36,6 +37,11 @@ public class RestaurantController {
     @GetMapping("/{restaurantId}")
     public ResponseEntity<RestaurantResponse> getRestaurantById(@PathVariable Long restaurantId) {
         return ResponseEntity.ok(restaurantService.getRestaurantById(restaurantId));
+    }
+
+    @GetMapping("/{restaurantId}/categories")
+    public ResponseEntity<List<CategoryResponse>> getCategoriesByRestaurant(@PathVariable Long restaurantId) {
+        return ResponseEntity.ok(restaurantService.getCategoriesByRestaurant(restaurantId));
     }
 
     @PutMapping("/{restaurantId}")

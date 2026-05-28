@@ -1,12 +1,18 @@
 package com.food.eat.foodservice.entity;
 
+import com.food.eat.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = "foods")
-public class Food {
+public class Food extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,6 +20,8 @@ public class Food {
     private Long foodId;
 
     private String name;
+    private String description;
+    private Boolean available;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "price_id")
@@ -23,14 +31,12 @@ public class Food {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "food_image_id")
-    private FoodImage foodImage;
+    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FoodImage> foodImage;
 
-    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "food_status_id")
-    private FoodStatus foodStatus;
+    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FoodOption> foodOption;
 
-    private String description;
-    private Boolean available;
+    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FoodStatus> foodStatus;
 }

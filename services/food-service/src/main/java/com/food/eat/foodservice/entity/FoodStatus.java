@@ -1,8 +1,12 @@
 package com.food.eat.foodservice.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.ToString;
 
+@Data
 @Entity
+@ToString(exclude = "food")
 @Table(name = "food_status")
 public class FoodStatus {
 
@@ -14,4 +18,8 @@ public class FoodStatus {
     private Boolean isFeatured;
 
     private Boolean isLiked;
+
+    @ManyToOne
+    @JoinColumn(name = "food_id")
+    private Food food;
 }

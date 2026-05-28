@@ -1,6 +1,7 @@
 package com.food.eat.restaurantservice.dto.response;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public record PromotionResponse(
@@ -11,5 +12,6 @@ public record PromotionResponse(
         BigDecimal value,
         Date validFrom,
         Date validTo,
-        Long usesRemaining
+        Long usesRemaining,
+        LocalDateTime createdAt
 ) {}

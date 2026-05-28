@@ -1,15 +1,18 @@
-package com.food.eat.restaurantservice.enitity;
+package com.food.eat.restaurantservice.entity;
 
+import com.food.eat.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = "promotions")
-public class Promotion {
+public class Promotion extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

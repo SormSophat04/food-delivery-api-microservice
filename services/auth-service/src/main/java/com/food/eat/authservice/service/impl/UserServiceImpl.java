@@ -115,17 +115,7 @@ public class UserServiceImpl implements UserService {
         emailVerificationCodeRepository.save(code);
         userRepository.save(user);
 
-        if (kafkaTemplate != null) {
-            kafkaTemplate.send("user-topic", new UserEvent(
-                    user.getUserId(),
-                    user.getUsername(),
-                    user.getEmail(),
-                    user.getPhoneNumber(),
-                    user.getImage(),
-                    user.getRole(),
-                    user.isEnabled()
-            ));
-        }
+        publishUserEvent(user);
 
         return generateAuthTokens(user);
     }
@@ -166,7 +156,7 @@ public class UserServiceImpl implements UserService {
         return generateAuthTokens(user);
     }
 
-    public AuthResponse generateAuthTokens(User user) {
+    private AuthResponse generateAuthTokens(User user) {
         AuthUser authUser = toAuthUser(user);
         String accessToken = jwtUtil.generateAccessToken(user.getEmail(), authUser.getAuthorities());
 
@@ -254,17 +244,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserResponse toUserResponse(User user) {
-        if (kafkaTemplate != null) {
-            kafkaTemplate.send("user-topic", new UserEvent(
-                    user.getUserId(),
-                    user.getUsername(),
-                    user.getEmail(),
-                    user.getPhoneNumber(),
-                    user.getImage(),
-                    user.getRole(),
-                    user.isEnabled()
-            ));
-        }
         return new UserResponse(
                 user.getUserId(),
                 user.getUsername(),
@@ -274,5 +253,21 @@ public class UserServiceImpl implements UserService {
                 user.getRole(),
                 user.isEnabled()
         );
+    }
+
+    private void publishUserEvent(User user) {
+        if (kafkaTemplate == null) {
+            return;
+        }
+
+        kafkaTemplate.send("user-topic", new UserEvent(
+                user.getUserId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getImage(),
+                user.getRole(),
+                user.isEnabled()
+        ));
     }
 }

@@ -6,6 +6,7 @@ import com.food.eat.foodservice.dto.response.FoodResponse;
 import com.food.eat.foodservice.service.FoodService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,14 +25,22 @@ public class FoodController {
         return ResponseEntity.status(HttpStatus.CREATED).body(foodService.createFood(request));
     }
 
+//    @GetMapping
+//    public ResponseEntity<List<FoodResponse>> getAllFoods(
+//            @RequestParam(required = false) Long categoryId
+//    ) {
+//        if (categoryId != null) {
+//            return ResponseEntity.ok(foodService.getFoodsByCategory(categoryId));
+//        }
+//        return ResponseEntity.ok(foodService.getAllFoods());
+//    }
+
     @GetMapping
-    public ResponseEntity<List<FoodResponse>> getAllFoods(
-            @RequestParam(required = false) Long categoryId
+    public Page<FoodResponse> getFoodsByCategory(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "4") int size
     ) {
-        if (categoryId != null) {
-            return ResponseEntity.ok(foodService.getFoodsByCategory(categoryId));
-        }
-        return ResponseEntity.ok(foodService.getAllFoods());
+        return foodService.getFoods(page, size);
     }
 
     @GetMapping("/{foodId}")

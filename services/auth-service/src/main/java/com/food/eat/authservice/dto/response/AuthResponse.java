@@ -19,7 +19,4 @@ public record AuthResponse(
 
         UserResponse user
 ) {
-    public AuthResponse(String tokenType, String accessToken, long expiresIn, UserResponse user) {
-        this(tokenType, accessToken, expiresIn, null, null, user);
-    }
 }

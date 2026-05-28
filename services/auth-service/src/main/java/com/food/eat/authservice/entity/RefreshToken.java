@@ -28,4 +28,7 @@ public class RefreshToken extends BaseEntity {
 
     @Column(name = "revoked", nullable = false)
     private boolean revoked = false;
+
+    @Column(name = "usage_count", nullable = false)
+    private int usageCount = 0;
 }

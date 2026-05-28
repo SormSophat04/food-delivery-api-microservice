@@ -1,6 +1,5 @@
 package com.food.eat.deliveryservice.dto.request;
 
-import com.food.eat.deliveryservice.enums.AddressType;
 import jakarta.validation.constraints.*;
 
 public record AddressRequest(
