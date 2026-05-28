@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "promotions")
-public class Promotion {
+public class Promotion ex {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

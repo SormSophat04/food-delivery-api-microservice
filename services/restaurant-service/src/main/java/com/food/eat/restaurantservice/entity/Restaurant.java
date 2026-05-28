@@ -2,13 +2,15 @@ package com.food.eat.restaurantservice.enitity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.sql.Time;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = "restaurants")
-public class Restaurant {
+public class Restaurant extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
