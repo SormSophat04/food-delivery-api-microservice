@@ -1,11 +1,10 @@
 package com.food.eat.foodservice.repository;
 
 import com.food.eat.foodservice.entity.Food;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-
 public interface FoodRepository extends JpaRepository<Food, Long> {
-    List<Food> findByCategoryCategoryId(Long categoryId);
-    List<Food> findByAvailableTrue();
+    Page<Food> findFoodsByCategoryCategoryId(Long categoryId, Pageable pageable);
 }

@@ -29,7 +29,6 @@ public class FoodServiceImpl implements FoodService {
     private final FoodRepository foodRepository;
     private final FoodMapper foodMapper;
     private final CategoryRepository categoryRepository;
-    private final FoodOptionRepository foodOptionRepository;
 
     @Override
     @Transactional
@@ -57,22 +56,8 @@ public class FoodServiceImpl implements FoodService {
     @Override
     public FoodResponse getFoodById(Long foodId) {
         Food food = foodRepository.findById(foodId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Food not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Food not found "+foodId));
         return foodMapper.toFoodResponse(food);
-    }
-
-    @Override
-    public List<FoodResponse> getAllFoods() {
-        return foodRepository.findByAvailableTrue().stream()
-                .map(foodMapper::toFoodResponse)
-                .toList();
-    }
-
-    @Override
-    public List<FoodResponse> getFoodsByCategory(Long categoryId) {
-        return foodRepository.findByCategoryCategoryId(categoryId).stream()
-                .map(foodMapper::toFoodResponse)
-                .toList();
     }
 
     @Override
@@ -97,15 +82,17 @@ public class FoodServiceImpl implements FoodService {
             food.getPrice().setDiscountPrice(request.price().discountPrice() != null ? String.valueOf(request.price().discountPrice()) : null);
         }
 
-//        if (request.image() != null && !request.image().clone()) {
-//            if (food.getFoodImage() == null) {
-//                FoodImage foodImage = new FoodImage();
-//                foodImage.setImage(request.image());
-//                food.setFoodImage(foodImage);
-//            } else {
-//                food.getFoodImage().setImage(request.image());
-//            }
-//        }
+/*
+        if (request.image() != null && !request.image().clone()) {
+            if (food.getFoodImage() == null) {
+                FoodImage foodImage = new FoodImage();
+                foodImage.setImage(request.image());
+                food.setFoodImage(foodImage);
+            } else {
+                food.getFoodImage().setImage(request.image());
+            }
+        }
+*/
 
         Food saved = foodRepository.save(food);
         return foodMapper.toFoodResponse(saved);
@@ -117,16 +104,6 @@ public class FoodServiceImpl implements FoodService {
         Food food = foodRepository.findById(foodId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Food not found"));
         foodRepository.delete(food);
-    }
-
-    @Override
-    public List<FoodOptionResponse> getFoodOptions(Long foodId) {
-        return foodOptionRepository.findByFoodFoodId(foodId).stream()
-                .map(option -> new FoodOptionResponse(
-                        option.getFoodOptionId(),
-                        option.getName(),
-                        option.getExtraPrice()))
-                .toList();
     }
 
     @Override

@@ -25,18 +25,8 @@ public class FoodController {
         return ResponseEntity.status(HttpStatus.CREATED).body(foodService.createFood(request));
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<FoodResponse>> getAllFoods(
-//            @RequestParam(required = false) Long categoryId
-//    ) {
-//        if (categoryId != null) {
-//            return ResponseEntity.ok(foodService.getFoodsByCategory(categoryId));
-//        }
-//        return ResponseEntity.ok(foodService.getAllFoods());
-//    }
-
     @GetMapping
-    public Page<FoodResponse> getFoodsByCategory(
+    public Page<FoodResponse> getFoods(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "4") int size
     ) {
@@ -60,10 +50,5 @@ public class FoodController {
     public ResponseEntity<Void> deleteFood(@PathVariable Long foodId) {
         foodService.deleteFood(foodId);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/{foodId}/options")
-    public ResponseEntity<List<FoodOptionResponse>> getFoodOptions(@PathVariable Long foodId) {
-        return ResponseEntity.ok(foodService.getFoodOptions(foodId));
     }
 }

@@ -10,11 +10,7 @@ import java.util.List;
 public interface FoodService {
     FoodResponse createFood(FoodRequest request);
     FoodResponse getFoodById(Long foodId);
-    List<FoodResponse> getAllFoods();
-    List<FoodResponse> getFoodsByCategory(Long categoryId);
+    Page<FoodResponse> getFoods(int page, int size);
     FoodResponse updateFood(Long foodId, FoodRequest request);
     void deleteFood(Long foodId);
-    List<FoodOptionResponse> getFoodOptions(Long foodId);
-
-    Page<FoodResponse> getFoods(int page, int size);
 }
