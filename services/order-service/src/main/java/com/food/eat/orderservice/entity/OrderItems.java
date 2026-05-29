@@ -15,7 +15,9 @@ public class OrderItems {
     @Column(name = "order_items_id")
     private Long orderItemsId;
 
-    private Long orderId;
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     private Long foodId;
 
@@ -23,5 +25,6 @@ public class OrderItems {
 
     @Column(name = "unit_price")
     private BigDecimal unitPrice;
+
     private String customisation;
 }

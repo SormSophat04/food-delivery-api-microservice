@@ -2,14 +2,15 @@ package com.food.eat.foodservice.controller;
 
 import com.food.eat.foodservice.dto.request.CategoryRequest;
 import com.food.eat.foodservice.dto.response.CategoryResponse;
+import com.food.eat.foodservice.dto.response.FoodResponse;
 import com.food.eat.foodservice.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -25,18 +26,34 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponse>> getAllCategories(
-            @RequestParam(required = false) Long restaurantId
+    public ResponseEntity<Page<CategoryResponse>> getAllCategories(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size
     ) {
-        if (restaurantId != null) {
-            return ResponseEntity.ok(categoryService.getCategoriesByRestaurant(restaurantId));
-        }
-        return ResponseEntity.ok(categoryService.getAllCategories());
+        return ResponseEntity.ok(categoryService.getAllCategories(PageRequest.of(page, size)));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<CategoryResponse>> searchCategoriesByName(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        return ResponseEntity.ok(categoryService.searchCategoriesByName(name, PageRequest.of(page, size)));
     }
 
     @GetMapping("/{categoryId}")
     public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long categoryId) {
         return ResponseEntity.ok(categoryService.getCategoryById(categoryId));
+    }
+
+    @GetMapping("{categoryId}/foods")
+    public ResponseEntity<Page<FoodResponse>> getFoodsByCategory(
+            @PathVariable Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size
+    ) {
+        return ResponseEntity.ok(categoryService.getFoodsByCategory(categoryId, page, size));
     }
 
     @PutMapping("/{categoryId}")

@@ -14,5 +14,4 @@ public record RestaurantResponse(
         String opensAt,
         String closesAt,
         LocalDateTime createdAt
-
 ) {}
