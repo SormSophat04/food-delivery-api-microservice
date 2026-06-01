@@ -1,4 +1,9 @@
-package com.food.eat.paymentservice.dto;
+package com.food.eat.paymentservice.dto.request;
 
-public record PaymentRequest() {
+import java.math.BigDecimal;
+
+public record PaymentRequest(
+        BigDecimal amount,
+        String orderId
+) {
 }

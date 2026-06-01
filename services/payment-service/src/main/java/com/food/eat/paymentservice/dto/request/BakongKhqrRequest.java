@@ -1,4 +1,9 @@
 package com.food.eat.paymentservice.dto.request;
 
-public record BakongKhqrRequest() {
+import java.math.BigDecimal;
+
+public record BakongKhqrRequest(
+        BigDecimal amount,
+        String orderId
+) {
 }

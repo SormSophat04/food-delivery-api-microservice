@@ -1,6 +1,7 @@
-package com.food.eat.paymentservice.dto.request;
+package com.food.eat.paymentservice.dto.response;
 
-public record CreditCardRequest(
+public record CreditCardResponse(
+        Long creditCardId,
         String cardNumber,
         String expiryMonth,
         String expiryYear,

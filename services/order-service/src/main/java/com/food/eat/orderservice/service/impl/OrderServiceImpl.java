@@ -12,6 +12,7 @@ import com.food.eat.orderservice.dto.response.OrderResponse;
 import com.food.eat.orderservice.entity.Order;
 import com.food.eat.orderservice.entity.OrderItems;
 import com.food.eat.orderservice.repository.OrderItemsRepository;
+import com.food.eat.orderservice.enums.OrderStatus;
 import com.food.eat.orderservice.repository.OrderRepository;
 import com.food.eat.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +64,7 @@ public class OrderServiceImpl implements OrderService {
         order.setUserId(userId);
         order.setRestaurantId(request.restaurantId());
         order.setDeliveryAddress(request.deliveryAddress());
-        order.setStatus("PENDING");
+        order.setOrderStatus(OrderStatus.PENDING);
         order.setSubtotal(subtotal);
         order.setDeliveryFee(BigDecimal.valueOf(2.0));
         order.setTotal(subtotal.add(order.getDeliveryFee()));
@@ -74,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
 
         for (OrderItemRequest item : request.items()) {
             OrderItems orderItem = new OrderItems();
-            orderItem.setOrderId(savedOrder.getOrderId());
+            orderItem.setOrder(savedOrder);
             orderItem.setFoodId(item.foodId());
             orderItem.setQuantity(item.quantity());
             orderItem.setUnitPrice(item.unitPrice());
@@ -110,8 +111,8 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse updateOrderStatus(Long orderId, String status) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
-        order.setStatus(status);
-        if ("DELIVERED".equalsIgnoreCase(status)) {
+        order.setOrderStatus(OrderStatus.valueOf(status.toUpperCase()));
+        if (OrderStatus.DELIVERED == order.getOrderStatus()) {
             order.setDeliveredAt(LocalDateTime.now());
         }
         Order saved = orderRepository.save(order);
@@ -127,10 +128,10 @@ public class OrderServiceImpl implements OrderService {
         if (!order.getUserId().equals(userId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Order does not belong to this user");
         }
-        if (!"PENDING".equals(order.getStatus())) {
+        if (OrderStatus.PENDING != order.getOrderStatus()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only pending orders can be cancelled");
         }
-        order.setStatus("CANCELLED");
+        order.setOrderStatus(OrderStatus.CANCELLED);
         orderRepository.save(order);
         publishOrderEvent(order);
     }
@@ -140,7 +141,7 @@ public class OrderServiceImpl implements OrderService {
             try {
                 OrderEvent event = new OrderEvent(
                         order.getOrderId(), order.getUserId(),
-                        order.getRestaurantId(), order.getStatus(), order.getTotal());
+                        order.getRestaurantId(), order.getOrderStatus().name(), order.getTotal());
                 kafkaTemplate.send("order-topic", event);
             } catch (Exception e) {
                 log.warn("Failed to publish order event: {}", e.getMessage());
@@ -157,7 +158,7 @@ public class OrderServiceImpl implements OrderService {
 
         return new OrderResponse(
                 order.getOrderId(), order.getUserId(), order.getRestaurantId(),
-                order.getDeliveryAddress(), order.getStatus(), order.getSubtotal(),
+                order.getDeliveryAddress(), order.getOrderStatus().name(), order.getSubtotal(),
                 order.getDeliveryFee(), order.getTotal(), order.getNotes(),
                 order.getPlacedAt(), items);
     }

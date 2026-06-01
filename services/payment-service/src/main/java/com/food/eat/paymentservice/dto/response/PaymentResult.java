@@ -1,4 +1,10 @@
 package com.food.eat.paymentservice.dto.response;
 
-public record PaymentResult() {
+import com.food.eat.paymentservice.enums.PaymentStatus;
+
+public record PaymentResult(
+        String qrContent,
+        String transactionId,
+        PaymentStatus status
+) {
 }
