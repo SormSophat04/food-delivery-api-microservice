@@ -15,6 +15,8 @@ public class CreditCard extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long creditCardId;
 
+    private Long userId;
+
     @Column(name = "card_number")
     private String cardNumber;
 
