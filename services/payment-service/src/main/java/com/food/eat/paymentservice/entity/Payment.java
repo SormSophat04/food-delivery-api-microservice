@@ -19,7 +19,7 @@ public class Payment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id")
-    private String paymentId;
+    private Long paymentId;
 
     @Column(nullable = false, unique = true)
     private String orderId;

@@ -10,6 +10,6 @@ public interface CreditCardService {
     CreditCardResponse createCreditCard(CreditCardRequest creditCardRequest, Long userId);
     CreditCardResponse getCreditCard(Long creditCardId);
     List<CreditCardResponse> getCreditCards();
-    CreditCardResponse updateCreditCard(CreditCardRequest creditCardRequest);
+    CreditCardResponse updateCreditCard(Long creditCardId, CreditCardRequest creditCardRequest);
     void deleteCreditCard(Long creditCardId);
 }

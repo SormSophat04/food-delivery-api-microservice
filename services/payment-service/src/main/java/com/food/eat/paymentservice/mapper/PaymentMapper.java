@@ -10,9 +10,8 @@ import org.mapstruct.Mapping;
 public interface PaymentMapper {
 
     @Mapping(target = "paymentId", ignore = true)
-    @Mapping(target = "createAt", ignore = true)
-    @Mapping(target = "updateAt", ignore = true)
-    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "qrContent", ignore = true)
     @Mapping(target = "transactionId", ignore = true)
@@ -23,5 +22,4 @@ public interface PaymentMapper {
     PaymentResponse toResponse(Payment payment);
 
     PaymentRequest toRequest(Payment payment);
-
 }

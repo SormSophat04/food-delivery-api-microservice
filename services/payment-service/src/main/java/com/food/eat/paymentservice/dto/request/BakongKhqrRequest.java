@@ -4,6 +4,6 @@ import java.math.BigDecimal;
 
 public record BakongKhqrRequest(
         BigDecimal amount,
-        String orderId
+        Long orderId
 ) {
 }
