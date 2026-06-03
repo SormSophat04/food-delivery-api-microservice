@@ -10,6 +10,8 @@ import org.mapstruct.Mapping;
 public interface CreditCardMapper {
 
     @Mapping(target = "creditCardId", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     CreditCard toEntity(CreditCardRequest creditCardRequest);
 
     CreditCardRequest toCreditCardRequest(CreditCard creditCard);

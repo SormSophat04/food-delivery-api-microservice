@@ -18,13 +18,13 @@ public class CreditCard extends BaseEntity {
     private Long userId;
 
     @Column(name = "card_number")
-    private String cardNumber;
+    private Integer cardNumber;
 
     @Column(name = "expiry_month")
-    private String expiryMonth;
+    private Integer expiryMonth;
 
     @Column(name = "expiry_year")
-    private String expiryYear;
+    private Integer expiryYear;
 
     private Integer cvv;
 
